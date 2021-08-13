@@ -1,5 +1,6 @@
 const express = require("express")
 const app = express()
+const fetch = require('./fetch')
 const cors = require("cors")
 const pool = require("./db")
 
@@ -8,6 +9,34 @@ app.use(cors())
 app.use(express.json()) //req.body
 
 //ROUTES//
+
+//get current bitcoin price
+
+app.get('/api/bitcoin/current_price', cors(), (req, res) => {
+    fetch.get('https://api.coindesk.com/v1/bpi/currentprice.json')
+    .then(response => {
+        // save this data in database
+        console.log('here')
+        res.json(response)
+    })
+    .catch(error => {
+        res.send(error)
+    })
+})
+
+app.post("/prediction", async (req, res) => {
+    try {
+        const { date, price, predicted_price, notes } = req.body
+        const newPrediction = await pool.query(
+            "INSERT INTO predictions (date, price, predicted_price, notes) VALUES($1, $2, $3, $4) RETURNING *",
+            [date, price, predicted_price, notes]
+        )
+
+        res.json(newPrediction.rows[0])
+    } catch (err) {
+        console.error(err.message)
+    }
+})
 
 //create a todo
 
@@ -26,6 +55,15 @@ app.post("/todos", async (req, res) => {
 })
 
 //get all todos
+
+app.get("/predictions", async (req, res) => {
+    try {
+      const allPredictions = await pool.query("SELECT * FROM predictions")
+        res.json(allPredictions.rows)
+    } catch (err) {
+        console.error(err.message)
+    }
+})
 
 app.get("/todos", async (req, res) => {
     try {
