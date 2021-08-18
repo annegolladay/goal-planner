@@ -1,8 +1,9 @@
 import React, { Fragment, useEffect, useState } from "react"
 import moment from 'moment';
+import './ListPrediction.css';
 import PredictionsChart from "./PredictionsChart";
-
-// import EditPrediction from "./EditPrediction"
+import EditPredictionNote from "./EditPredictionNote"
+import { sortData } from '../utils/utils'
 
 const ListPredictions = () => {
     const [predictions, setPredictions] = useState([])
@@ -16,7 +17,7 @@ const ListPredictions = () => {
                 method: "DELETE"
         })
 
-            setPredictions(predictions.filter(prediction => prediction.prediction_id !== id))
+            setPredictions(predictions.filter(prediction => prediction.id !== id))
         } catch (err) {
             console.error(err.message)
         }
@@ -26,8 +27,9 @@ const ListPredictions = () => {
         try {
             const response = await fetch("http://localhost:5000/predictions")
             const jsonData = await response.json()
+            const sortedData = sortData(jsonData)
 
-            setPredictions(jsonData)
+            setPredictions(sortedData)
 
             console.log('jsonData', jsonData)
 
@@ -86,40 +88,29 @@ const ListPredictions = () => {
                     <th>Price</th>
                     <th>Predicted Price</th>
                     <th>Notes</th>
-                    <th>Edit</th>
                     <th>Delete</th>
                 </tr>
                 </thead>
                 <tbody>
-                {/*<tr>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>john@example.com</td>
-                </tr> */}
-                {predictions.map(prediction => (
-                    <tr key={prediction.prediction_id}>
+                {predictions?.map(prediction => (
+                    <tr key={prediction.id}>
                     <td>{moment(prediction.date).format('ll')}</td>
-                    <td>{prediction.price}</td>
-                    <td>{prediction.predicted_price}</td>
+                    <td>${prediction.price}</td>
+                    <td>${prediction.predicted_price}</td>
                     <td>
                         <div>
-                            {prediction.notes}
-                            <button
-                            className="btn"
-                            onClick={() => {}}
-                            >
-                            Edit
-                        </button>
+                          {prediction.notes}
+                          <EditPredictionNote 
+                            class="Edit-Prediction-Note"
+                            prediction={prediction} 
+                            setPredictions={setPredictions} 
+                          /> 
                         </div>
-                    </td>
-                    <td>
-                        {/* <EditPrediction prediction={prediction} /> */}
-                        edit here later
                     </td>
                     <td>
                         <button
                             className="btn btn-danger"
-                            onClick={() => deletePrediction(prediction.prediction_id)}
+                            onClick={() => deletePrediction(prediction.id)}
                         >
                             Delete
                         </button>

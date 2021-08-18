@@ -12,11 +12,11 @@ const InputTodo = () => {
     useEffect(() => {
         api.get('/bitcoin/current_price')
         .then(res => {
-          console.log(res)
-          setCurrentPrice(res)
+            console.log(res)
+            setCurrentPrice(res)
         })
     }, [])
-  
+
     const onSubmitForm = async e => {
         e.preventDefault()
         try {
@@ -41,26 +41,29 @@ const InputTodo = () => {
 
     return (
         <Fragment>
-            <h1 className="text-center mt-5">Bit Predict</h1>
-            <div>
-                <span>{ chartName } current price: {price}</span>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png" class=" img-fluid" alt="Responsive image" style={{width: "100px"}} />
+            <h1 className="mt-5 display-4">Bit Predict</h1>
+            <div className="text-center mt-5 display-5">
+                <span>{ chartName } current price: $ {price}</span>
             </div>
-            <form className="d-flex mt-5" onSubmit={onSubmitForm}>
+            <form className="d-flex text-center flex-column mt-5 justify-content-center" onSubmit={onSubmitForm}>
                 <input
                 type="text"
-                className="form-control"
+                className="text-center form-control justify-content-center align-self-center w-50 mt-1"
                 value={predictedPrice}
                 placeholder="Guess tomorrow's price"
                 onChange={e => setPredictedPrice(e.target.value)}
                 />
                 <input
-                type="text"
-                className="form-control"
+                type="text-area"
+                className="text-center form-control justify-content-center align-self-center w-50 mt-1"
                 placeholder="Add notes"
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 />
-                <button className="btn btn-success">Add</button>
+                <div className="w-100 mt-1">
+                    <button className="text-center btn btn-success btn-sm">Add</button>
+                </div>
             </form>
         </Fragment>
     )

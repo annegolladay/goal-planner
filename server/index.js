@@ -89,6 +89,23 @@ app.get("/todos/:id", async (req, res) => {
     }
 })
 
+//update a prediction note
+
+app.put("/predictions/:id", async (req, res) => {
+    try {
+        const { id } = req.params
+        const { notes } = req.body
+        const updatePredictionNote = await pool.query(
+            "UPDATE predictions SET notes = $1 WHERE id = $2",
+            [notes, id]
+        )
+        const allPredictions = await pool.query("SELECT * FROM predictions")
+        res.status(200).send(allPredictions.rows)
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
 //update a todo
 
 app.put("/todos/:id", async (req, res) => {
